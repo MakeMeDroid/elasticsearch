@@ -30,9 +30,17 @@ import java.util.Map;
 
 /**
  * A cli tool which is made up of multiple subcommands.
+ * 
+ * 用于包含多个子命令的命令类，例如
+ * >>cmd subcmd1 args...
+ * >>cmd subcmd2 args...
+ * 
+ * 其中subcmd1和subcmd2就是其包含的子命令名
+ * 
  */
 public class MultiCommand extends Command {
 
+    //把子命令名与Command对象一一对应
     protected final Map<String, Command> subcommands = new LinkedHashMap<>();
 
     private final NonOptionArgumentSpec<String> arguments = parser.nonOptions("command");
@@ -74,6 +82,14 @@ public class MultiCommand extends Command {
         if (subcommand == null) {
             throw new UserException(ExitCodes.USAGE, "Unknown command [" + args[0] + "]");
         }
+        
+        /**
+         * 对于这里的实现，有一个问题，直接调用mainWithoutErrorHandling会导致子命令的beforeMain没法
+         * 得到执行，但如果调用Main，则可能会导致多次设置shutdownHookThread。
+         * 
+         * 可以这样理解，beforeMain是针对整个程序，而不是每个命令，所以beforeMain是相对整个程序做了一些初始化动作。
+         * 
+         */
         subcommand.mainWithoutErrorHandling(Arrays.copyOfRange(args, 1, args.length), terminal);
     }
 

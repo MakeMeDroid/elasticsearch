@@ -32,15 +32,28 @@ import java.util.Arrays;
 
 /**
  * An action to execute within a cli.
+ * 
+ * 用于在命令行中执行的命令，比如用于启动ES程序的命令。
+ * 
+ * 这个类是个便于编写可以从命令行启动的类的工具，提供
+ * 自动对命令行参数进行解析的功能。
+ * 
  */
 public abstract class Command implements Closeable {
 
     /** A description of the command, used in the help output. */
     protected final String description;
 
+    /**
+     * 执行程序前可以通过这个函数做一些初始化动作
+     */
     private final Runnable beforeMain;
 
-    /** The option parser for this command. */
+    /** The option parser for this command. 
+     * 
+     * 命令行参数解析器
+     * 
+     */
     protected final OptionParser parser = new OptionParser();
 
     private final OptionSpec<Void> helpOption = parser.acceptsAll(Arrays.asList("h", "help"), "show help").forHelp();
@@ -65,6 +78,11 @@ public abstract class Command implements Closeable {
     public final int main(String[] args, Terminal terminal) throws Exception {
         if (addShutdownHook()) {
 
+            /**
+             * 为了在程序结束时做一些收尾操作，比如资源释放等，这里直接调用了close方法
+             * 所以可以在close中实现收尾动作
+             * 
+             */
             shutdownHookThread = new Thread(() -> {
                 try {
                     this.close();
@@ -121,6 +139,9 @@ public abstract class Command implements Closeable {
             terminal.setVerbosity(Terminal.Verbosity.NORMAL);
         }
 
+        /**
+         * 命令的执行逻辑函数，需要在具体命令类中实现。
+         */
         execute(terminal, options);
     }
 

@@ -36,6 +36,15 @@ import java.util.Locale;
  * which allows {@link #println(Verbosity,String)} calls which act like a logger,
  * only actually printing if the verbosity level of the terminal is above
  * the verbosity of the message.
+ * 
+ * 模拟一个控制终端，提供了读取消息和密码，以及输出信息的借口，目前有两种实现方式：
+ * 1、Console Terminal（System.console()）
+ * 2、System Terminal（System.out, System.in）
+ * 
+ * 并且提供了一些输出级别：
+ * 1、SILENT
+ * 2、NORMAL
+ * 3、VERBOSE
 */
 public abstract class Terminal {
 
